@@ -1,0 +1,49 @@
+version: '2'
+
+services:
+  web:
+    image: nginx
+    restart: always
+    ports:
+      - "8080:80"
+    volumes:
+      - ./config/nginx/default.conf:/etc/nginx/conf.d/default.conf
+      - ./log/nginx:/var/log/nginx
+      - ./cache/nginx:/var/cache/nginx
+      - ./www:/usr/share/nginx/html
+    networks:
+      - frontend
+  php:
+    image: php:7-fpm
+    restart: always
+    volumes:
+      - ./config/php/php.ini:/usr/local/etc/php/php.ini
+      - ./log/php:/var/log/php
+      - ./www:/usr/share/nginx/html
+    networks:
+      - frontend
+  db:
+    image: mariadb
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
+      MYSQL_USER: "${MYSQL_USER}"
+      MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
+      MYSQL_DATABASE: "${MYSQL_DATABASE}"
+    volumes:
+      - ./log/mysql:/var/log/mysql
+    networks:
+      - backend
+  pma:
+    image: phpmyadmin/phpmyadmin
+    container_name: phpmyamdin
+    restart: always
+    ports:
+      - 8081:80
+    networks:
+      - backend
+networks:
+  frontend:
+    driver: bridge
+  backend:
+    driver: bridge
