@@ -5,7 +5,7 @@ services:
     image: nginx
     restart: always
     ports:
-      - "8080:80"
+      - "80:80"
     volumes:
       - ./config/nginx/default.conf:/etc/nginx/conf.d/default.conf
       - ./log/nginx:/var/log/nginx
@@ -14,7 +14,8 @@ services:
     networks:
       - frontend
   php:
-    image: php:7-fpm
+    build: ./build/php
+    container_name: php
     restart: always
     volumes:
       - ./config/php/php.ini:/usr/local/etc/php/php.ini
@@ -22,8 +23,9 @@ services:
       - ./www:/usr/share/nginx/html
     networks:
       - frontend
+      - backend
   db:
-    image: mariadb
+    image: mariadb:10.0
     restart: always
     environment:
       MYSQL_ROOT_PASSWORD: "${MYSQL_ROOT_PASSWORD}"
@@ -31,6 +33,7 @@ services:
       MYSQL_PASSWORD: "${MYSQL_PASSWORD}"
       MYSQL_DATABASE: "${MYSQL_DATABASE}"
     volumes:
+      - ./mysql/databases:/var/lib/mysql
       - ./log/mysql:/var/log/mysql
     networks:
       - backend

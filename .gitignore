@@ -1,3 +1,4 @@
-log/*
-cache/*
-www/*
+log
+cache
+www
+mysql
